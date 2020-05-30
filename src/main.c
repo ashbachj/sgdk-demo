@@ -99,11 +99,16 @@ int main()
   VDP_setScreenWidth320();
   VDP_setScreenHeight224();
 
-  VDP_setTextPlan(PLAN_B);
+  VDP_setTextPlan(PLAN_WINDOW);
   VDP_setWindowAddress(0xD000);
-  VDP_setWindowHPos(0, 0);
-  VDP_setWindowVPos(1, 27);
+  VDP_setAPlanAddress(0xC000);
+  VDP_setBPlanAddress(0xE000);
+  VDP_setHScrollTableAddress(0xF000);
+  VDP_setSpriteListAddress(0xFC00);
+  VDP_setWindowHPos(0, 1);
+  VDP_setWindowVPos(0, 27);
   
+
   JOY_init();
   JOY_setEventHandler( &joyHandler );
   
@@ -111,31 +116,26 @@ int main()
 
   VDP_setHilightShadow(0);
   VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
-  
-  //VDP_drawImageEx(PLAN_A, &moon, TILE_ATTR_FULL(PAL1, 0, 0, 0, 1), 20, 20, 0, CPU);
-/*  VDP_setPalette(PAL0, PAL_TEST_BG);
-  VDP_setPalette(PAL1, PAL_TEST_FG);
-  PAL_setColor((PAL1 * 16), 0x0e00);
-*/
-  background_init();
+
+  background_init(xPosition, yPosition);
   
   VDP_setPalette(PAL2, sheela.palette->data);
   player = SPR_addSprite(&sheela,
-                xPosition,
-                yPosition,
-                TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
+                         xPosition,
+                         yPosition,
+                         TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
 
   while(1) {
     updatePhysics();
-    sprintf(debug,"xv: %d, yv: %d", xVelocity, yVelocity);
-    VDP_clearText(2,2,20);
-    VDP_drawText(debug, 2, 2);
+    sprintf(debug,"xv: %d, yv: %d", yVelocity, getCameraY());
+    VDP_clearText(0,0,20);
+    VDP_drawText(debug, 0, 0);
 //    VDP_clearTextBG(PLAN_WINDOW, 0, 0, 20);
 //    VDP_drawTextBG(PLAN_WINDOW, debug, 0, 0);
     SPR_update();
-    background_update(xVelocity, yVelocity);
-    VDP_waitVSync();
+    background_update(xPosition, yPosition);
     background_updateVDP();
+    VDP_waitVSync();
   }
   
   return 0;
