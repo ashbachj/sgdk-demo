@@ -16,7 +16,7 @@ u16 bgCameraTileY;
 u32 fgCameraLimitPixelX;
 u32 fgCameraLimitPixelY;
 
-void background_init(xPosition, yPosition);
+void background_init(int xPosition, int yPosition);
 void background_update(int xVelocity, int yVelocity);
 void background_updateVDP();
 void updateCamera();

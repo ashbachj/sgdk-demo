@@ -2,94 +2,13 @@
 #include "include/tiles.h"
 #include "include/util.h"
 #include "include/background.h"
+#include "include/joypad.h"
+#include "include/physics.h"
 
 // resources.h is generated from resources.res
 #include "resources.h"
 
-int xPosition = 40;
-int yPosition = 136;
-int xVelocity = 0;
-int yVelocity = 0;
-int xDirection = 0;
-int isOnGround = 1;
-const int xAcceleration = 2;
-const int xFriction = -1;
-const int gravity = 1;
-const int xMaxVelocity = 12;
-const int yMaxVelocity = -8;
-const int yMinPosition = 136;
-
 Sprite* player;
-
-void joyHandler( u16 joy, u16 changed, u16 state)
-{
-  if (joy == JOY_1)
-  {
-    // Change state of player based on input
-    if (state & BUTTON_RIGHT)
-    {
-      // move right
-      xDirection= 1;
-    }
-    else if (state & BUTTON_LEFT)
-    {
-      // move left
-      xDirection = -1;
-    }
-    else { // button released
-      if ( (changed & BUTTON_RIGHT) | (changed & BUTTON_LEFT) )
-      {
-        // stop x motion
-        xDirection = 0;
-      }
-    }
-    
-    if ((state & changed & BUTTON_UP) && isOnGround)
-    {
-      // move up
-      yVelocity = yMaxVelocity;
-      isOnGround = 0;
-    }
-  }
-}
-
-void updatePhysics()
-{
-  xVelocity = xDirection*xAcceleration;
-  if (xVelocity > 0) {
-    xVelocity -= xFriction;
-  } else if (xVelocity < 0) {
-    xVelocity += xFriction;
-  }
-  if (xVelocity < -xMaxVelocity) {
-    xVelocity = -xMaxVelocity;
-  } else if (xVelocity > xMaxVelocity) {
-    xVelocity = xMaxVelocity;
-  }
-
-  yVelocity += gravity;
-  if (isOnGround) {
-    yVelocity = 0;
-  }
-  else if (yVelocity > -yMaxVelocity) {
-    yVelocity = -yMaxVelocity;
-  }
-  
-  xPosition += xVelocity;
-  yPosition += yVelocity;
-
-  if (xPosition < LEFT_EDGE) {
-    xPosition = LEFT_EDGE;
-  } else if (xPosition > SCREEN_PIXEL_WIDTH-CHARACTER_WIDTH) {
-    xPosition = SCREEN_PIXEL_WIDTH-CHARACTER_WIDTH;
-  }
-  if (yPosition > yMinPosition) {
-    yPosition = yMinPosition;
-    isOnGround = 1;
-  }
-
-  SPR_setPosition(player, xPosition, yPosition);
-}
 
 int main()
 { 
@@ -117,23 +36,23 @@ int main()
   VDP_setHilightShadow(0);
   VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_PLANE);
 
-  background_init(xPosition, yPosition);
+  background_init(getPlayerPosition().x, getPlayerPosition().y);
   
   VDP_setPalette(PAL2, sheela.palette->data);
   player = SPR_addSprite(&sheela,
-                         xPosition,
-                         yPosition,
+                         getPlayerPosition().x,
+                         getPlayerPosition().y,
                          TILE_ATTR(PAL2, TRUE, FALSE, FALSE));
 
   while(1) {
-    updatePhysics();
-    sprintf(debug,"xv: %d, yv: %d", yVelocity, getCameraY());
+    updatePhysics(xDirection, yDirection, player);
+    sprintf(debug,"xv: %d, yv: %d", getPlayerPosition().x, getPlayerPosition().y);
     VDP_clearText(0,0,20);
     VDP_drawText(debug, 0, 0);
 //    VDP_clearTextBG(PLAN_WINDOW, 0, 0, 20);
 //    VDP_drawTextBG(PLAN_WINDOW, debug, 0, 0);
     SPR_update();
-    background_update(xPosition, yPosition);
+    background_update(getPlayerPosition().x, getPlayerPosition().y);
     background_updateVDP();
     VDP_waitVSync();
   }
