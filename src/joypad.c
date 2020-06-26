@@ -3,6 +3,7 @@
 
 xDirection = 0;
 yDirection = 0;
+playEffect = 0;
 
 void joyHandler( u16 joy, u16 changed, u16 state)
 {
@@ -29,6 +30,13 @@ void joyHandler( u16 joy, u16 changed, u16 state)
       yDirection = -1;
     } else {
       yDirection = 0;
-    } 
+    }
+
+    if (state & BUTTON_START)
+    {
+      playEffect = 1;
+    } else {
+      playEffect = 0;
+    }
   }
 }

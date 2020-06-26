@@ -6,6 +6,7 @@
 #include "include/physics.h"
 
 // resources.h is generated from resources.res
+// e.g. java -jar $GENDEV/bin/rescomp.jar src/res/resources.res src/resources.s
 #include "resources.h"
 
 Sprite* player;
@@ -51,6 +52,11 @@ int main()
     VDP_drawText(debug, 0, 0);
 //    VDP_clearTextBG(PLAN_WINDOW, 0, 0, 20);
 //    VDP_drawTextBG(PLAN_WINDOW, debug, 0, 0);
+    if (playEffect) {
+      XGM_startPlay(test);
+      XGM_setLoopNumber(0);
+    }
+
     SPR_update();
     background_update(getPlayerPosition().x, getPlayerPosition().y);
     background_updateVDP();

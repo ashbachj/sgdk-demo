@@ -3,6 +3,7 @@
 
 #include <genesis.h>
 
+extern int playEffect;
 extern int xDirection;
 extern int yDirection;
 

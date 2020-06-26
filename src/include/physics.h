@@ -2,11 +2,7 @@
 #define PHYSICS_H_
 
 #include <genesis.h>
-
-struct Position {
-  int x;
-  int y;
-};
+#include "position.h"
 
 struct Position getPlayerPosition();
 
